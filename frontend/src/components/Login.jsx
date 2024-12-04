@@ -1,71 +1,70 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import "./Login.css";
 
-export function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // For handling error messages
-  const [loading, setLoading] = useState(false); // For loading state
+const Login = () => {
+  const [formData, setFormData] = useState({
+    username: '',   // Added username
+    email: '',
+    password: ''
+  });
 
-  const handleLogin = async (e) => {
+  const navigate = useNavigate();  // Initialize useNavigate hook
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Input validation
-    if (!email || !password) {
-      setError("Email and password are required.");
-      return;
-    }
-
-    setLoading(true);
-    setError(""); // Reset error before new attempt
-
     try {
-      // Make a request to your backend for authentication
-      const response = await axios.post("http://localhost:5000/auth/login", {
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        window.location.href = "/"; // Redirect on successful login
-      } else {
-        setError("Invalid credentials. Please try again.");
+      const response = await axios.post('http://localhost:5000/login', formData);
+      const { token } = response.data;
+      localStorage.setItem('authToken', token);  // Save JWT in localStorage or sessionStorage
+      alert('Login successful');
+      
+      if (token) {
+        navigate("/");  // Redirect to the homepage or another page upon success
       }
     } catch (error) {
-      setError("Login failed. Please check your connection and try again.");
-      console.error("Login error", error); // You can keep this line for debugging
-    } finally {
-      setLoading(false); // Stop loading
+      console.error('Error during login:', error);
+      alert('Login failed');
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error message */}
-        <div>
-          <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        value={formData.username}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
   );
-}
+};
+
+export default Login;

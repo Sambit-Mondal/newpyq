@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Pyq } from "./components/Pyq";
-import { Login } from "./components/Login"; // Importing the Login component
+import Login from "./components/Login";
+import Signup from "./components/Signin";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Pyq />} /> {/* Home or main page */}
         <Route path="/login" element={<Login />} /> {/* Login page */}
+        <Route path="/signin" element={<Signup/>} />
       </Routes>
     </Router>
   );

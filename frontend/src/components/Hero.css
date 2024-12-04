@@ -10,7 +10,7 @@ html, body {
     text-align: center;
     border-radius: 0; /* Remove any rounded edges */
     width: 100%; /* Full width */
-    height: 1300px;
+    height: 100%;
     margin: 0; /* Remove any default margin */
     box-sizing: border-box; /* Ensure padding doesn't affect width */
   }
