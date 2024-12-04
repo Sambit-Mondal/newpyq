@@ -1,0 +1,81 @@
+/* General Navbar Styling */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem ;
+  background-color: #1A1A1D; /* Dark background */
+  color: #A64D79; /* Highlight color */
+  box-shadow: 0 12px 51px #A64D79;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo Styling */
+.navbar-logo {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* Links Container */
+/* Links Container */
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, #3B1C32, #6A1E55); /* Smooth gradient */
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animation effect */
+  }
+  
+  /* Hover effect for a dynamic feel */
+  .navbar-links:hover {
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+  }
+  
+
+/* Links Styling */
+.navbar-links a {
+  text-decoration: none;
+  color: #ff00b7; /* Muted link color */
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: #A64D79; /* Highlight color */
+}
+
+/* Mobile Responsive Styling */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .navbar-logo {
+    margin-bottom: 1rem;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .navbar-links a {
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+  }
+}

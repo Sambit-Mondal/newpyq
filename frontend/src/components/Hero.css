@@ -1,0 +1,73 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+.hero-section {
+    padding: 2rem;
+    background: linear-gradient(to right, #3B1C32, #6A1E55); /* Updated gradient */
+    color: #A64D79; /* Highlight color for text */
+    text-align: center;
+    border-radius: 0; /* Remove any rounded edges */
+    width: 100%; /* Full width */
+    height: 1300px;
+    margin: 0; /* Remove any default margin */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #A64D79; /* Highlight color */
+    margin-bottom: 1rem;
+  }
+  
+  .hero-content p {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    color: #FFFFFF; /* Light text for better readability */
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  
+  .filter-dropdown {
+    padding: 0.5rem;
+    font-size: 1rem;
+    background-color: #1A1A1D; /* Dark dropdown background */
+    color: #FFFFFF; /* Light text */
+    border: 1px solid #6A1E55; /* Border to match palette */
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    width: auto; /* Dropdown width remains dynamic */
+  }
+  
+  .filter-dropdown:focus {
+    border-color: #A64D79; /* Focus border color */
+  }
+  
+  .filter-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #6A1E55; /* Updated button color */
+    color: #FFFFFF; /* Light text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .filter-button:hover {
+    background-color: #A64D79; /* Highlight color on hover */
+  }
+  
+  .filter-button:active {
+    background-color: #3B1C32; /* Slightly darker for active state */
+  }
+  
