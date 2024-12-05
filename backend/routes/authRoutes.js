@@ -3,42 +3,32 @@ const router = express.Router();
 const { google } = require('googleapis');
 const { signup, login } = require('../controllers/authControllers');
 
-// API Key and Google Drive setup
 const API_KEY = 'ad953c7cfc61064a6fd791ecc39b123698254512';
 const drive = google.drive({ version: 'v3', auth: API_KEY });
 
-// Folder ID mapping based on fields, semesters, and subjects
 const folderIdMapping = {
   'CSE': {
     1: {
       'Mathematics I': 'folderIdForCSE1MathematicsI',
       'Physics': 'folderIdForCSE1Physics',
-      // Add other subjects for Semester 1...
     },
     2: {
       'Mathematics II': 'folderIdForCSE2MathematicsII',
       'Mechanics': 'folderIdForCSE2Mechanics',
-      // Add other subjects for Semester 2...
     },
-    // Add other semesters for CSE...
   },
   'ECS': {
     1: {
       'Electronics': 'folderIdForECS1Electronics',
-      // Add other subjects for Semester 1...
     },
-    // Add other semesters for ECS...
   },
-  // Add other fields...
 };
 
 router.get('/yourRoute', (req, res) => {
     const { stream, year, semester, subject } = req.query;
   
-    // For now, just logging the received query parameters
     console.log(`Received request: ${stream}, Year: ${year}, Semester: ${semester}, Subject: ${subject}`);
   
-    // Respond with mock data (replace with your actual logic)
     if (stream && year && semester && subject) {
       res.json({
         success: true,
@@ -52,7 +42,6 @@ router.get('/yourRoute', (req, res) => {
     }
   });
 
-// Route to list files from a specific folder based on field, semester, subject, and year
 router.get('/files', async (req, res) => {
   const { field, semester, subject, year } = req.query;
 
@@ -64,7 +53,6 @@ router.get('/files', async (req, res) => {
   }
 
   try {
-    // Check if the folderId exists for the provided field, semester, and subject
     const folderId = folderIdMapping[field]?.[semester]?.[subject];
     
     if (!folderId) {
@@ -73,8 +61,6 @@ router.get('/files', async (req, res) => {
         message: 'No folder found for the specified combination.',
       });
     }
-
-    // List files from the folder dynamically based on the folderId
     const response = await drive.files.list({
       q: `'${folderId}' in parents`, // Filter to only files in the specified folder
       fields: 'files(id, name, mimeType)', // Get file ID, name, and mime type
