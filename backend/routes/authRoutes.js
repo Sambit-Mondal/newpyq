@@ -1,106 +1,91 @@
 const express = require('express');
 const router = express.Router();
 const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 const { signup, login } = require('../controllers/authControllers');
+const Pdf = require('../models/Pdf');  // Import your PDF model
 
-const API_KEY = 'ad953c7cfc61064a6fd791ecc39b123698254512';
+const API_KEY = 'ad953c7cfc61064a6fd791ecc39b123698254512'; // Replace with your actual API key
 const drive = google.drive({ version: 'v3', auth: API_KEY });
 
-const folderIdMapping = {
-  'CSE': {
-    1: {
-      'Mathematics I': 'folderIdForCSE1MathematicsI',
-      'Physics': 'folderIdForCSE1Physics',
-    },
-    2: {
-      'Mathematics II': 'folderIdForCSE2MathematicsII',
-      'Mechanics': 'folderIdForCSE2Mechanics',
-    },
-  },
-  'ECS': {
-    1: {
-      'Electronics': 'folderIdForECS1Electronics',
-    },
-  },
-};
+// Folder ID for recursive retrieval
+const rootFolderId = '1rE4VICJa1jYLSJCDx2DIch3downTKn7W'; // Replace with your actual folder ID
 
-router.get('/yourRoute', (req, res) => {
-    const { stream, year, semester, subject } = req.query;
-  
-    console.log(`Received request: ${stream}, Year: ${year}, Semester: ${semester}, Subject: ${subject}`);
-  
-    if (stream && year && semester && subject) {
-      res.json({
-        success: true,
-        files: [
-          { name: 'sample.pdf', url: 'http://example.com/sample.pdf' },
-          { name: 'example.pdf', url: 'http://example.com/example.pdf' },
-        ],
-      });
-    } else {
-      res.status(404).json({ success: false, message: 'No files found' });
-    }
-  });
+async function listFilesRecursively(folderId) {
+  const files = [];
 
-router.get('/files', async (req, res) => {
-  const { field, semester, subject, year } = req.query;
-
-  if (!field || !semester || !subject || !year) {
-    return res.status(400).json({
-      success: false,
-      message: 'Field, semester, subject, and year are required.',
+  async function fetchFiles(folderId) {
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents`,
+      fields: 'files(id, name, mimeType)',
     });
+
+    for (const file of response.data.files) {
+      if (file.mimeType === 'application/vnd.google-apps.folder') {
+        await fetchFiles(file.id);
+      } else {
+        files.push({
+          id: file.id,
+          name: file.name,
+          url: `https://drive.google.com/file/d/${file.id}/view?usp=drive_link`,
+        });
+      }
+    }
+  }
+
+  await fetchFiles(folderId);
+  return files;
+}
+
+function getPdfsFromLocal(stream, year, semester, subject) {
+  // Construct the path to the specific folder where PDFs are stored
+  const folderPath = path.join(__dirname, 'path/to/pdfs', stream, `year${year}`, `semester${semester}`);
+
+  try {
+    const files = fs.readdirSync(folderPath);
+
+    const filteredFiles = files.filter(file => file.toLowerCase().includes(subject.toLowerCase()));
+
+    const pdfFiles = filteredFiles.map(file => ({
+      name: file,
+      url: `/pdfs/${stream}/year${year}/semester${semester}/${file}`,
+    }));
+
+    return pdfFiles; // Return the filtered PDF data
+  } catch (error) {
+    console.error('Error reading PDF files:', error);
+    return []; // Return an empty array if there's an error
+  }
+}
+
+router.get('/yourRoute', async (req, res) => {
+  const { stream, year, semester, subject } = req.query;
+
+  // Validate input
+  if (!stream || !year || !semester || !subject) {
+    return res.status(400).json({ success: false, message: 'Missing required parameters' });
   }
 
   try {
-    const folderId = folderIdMapping[field]?.[semester]?.[subject];
-    
-    if (!folderId) {
-      return res.status(404).json({
-        success: false,
-        message: 'No folder found for the specified combination.',
-      });
-    }
-    const response = await drive.files.list({
-      q: `'${folderId}' in parents`, // Filter to only files in the specified folder
-      fields: 'files(id, name, mimeType)', // Get file ID, name, and mime type
-    });
+    const filteredPdfs = await getPdfs(stream, year, semester, subject);
 
-    const files = response.data.files;
-
-    if (files.length) {
-      // Filter files based on the year (you can extend this logic if needed)
-      const filteredFiles = files.filter(file => {
-        // Example logic for filtering by year (you could adjust based on file metadata)
-        const fileName = file.name;
-        const fileYearMatch = fileName.includes(year);
-        return fileYearMatch;
-      });
-
-      res.json({
-        success: true,
-        files: filteredFiles,
-      });
+    if (filteredPdfs.length > 0) {
+      res.json({ success: true, files: filteredPdfs });
     } else {
-      res.json({
-        success: false,
-        message: 'No files found in this folder.',
-      });
+      res.status(404).json({ success: false, message: 'No files found for the selected filters' });
     }
   } catch (error) {
-    console.error('Error retrieving files:', error);
+    console.error('Error fetching PDFs:', error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred while retrieving files.',
+      message: 'An error occurred while fetching PDFs.',
       error: error.message,
     });
   }
 });
-
-// POST route for signup
 router.post('/signup', signup);
 
-// POST route for login
 router.post('/login', login);
 
 module.exports = router;
