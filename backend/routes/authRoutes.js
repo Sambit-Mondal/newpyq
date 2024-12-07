@@ -39,9 +39,7 @@ async function listFilesRecursively(folderId) {
 }
 
 function getPdfsFromLocal(stream, year, semester, subject) {
-  // Construct the path to the specific folder where PDFs are stored
-  const folderPath = path.join(__dirname, 'path/to/pdfs', stream, `year${year}`, `semester${semester}`);
-
+  const folderPath = path.join(__dirname, '..', 'pdfs', stream, `year${year}`, `semester${semester}`);
   try {
     const files = fs.readdirSync(folderPath);
 
@@ -68,7 +66,7 @@ router.get('/yourRoute', async (req, res) => {
   }
 
   try {
-    const filteredPdfs = await getPdfs(stream, year, semester, subject);
+    const filteredPdfs = getPdfsFromLocal(stream, year, semester, subject); // Use getPdfsFromLocal instead of getPdfs
 
     if (filteredPdfs.length > 0) {
       res.json({ success: true, files: filteredPdfs });
@@ -84,6 +82,7 @@ router.get('/yourRoute', async (req, res) => {
     });
   }
 });
+
 router.post('/signup', signup);
 
 router.post('/login', login);
