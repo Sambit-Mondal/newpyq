@@ -1,7 +1,6 @@
-import React from 'react';
 import "./Pdf.css";
 
-export const Pdf = ({ pdfs }) => {
+const Pdf = ({ pdfs }) => {
     return (
         <div>
             {pdfs.length === 0 ? (
@@ -26,7 +25,7 @@ export const Pdf = ({ pdfs }) => {
                                 <div className="pdf-details">
                                     <h3>{pdf.name}</h3>
                                     <button
-                                        onClick={() => window.open(`https://drive.google.com/file/d/${pdf.id}/preview`, '_blank')}
+                                        onClick={() => window.open(`https://drive.google.com/file/d/${pdf.id}/view`, '_blank')}
                                         className="view-pdf-btn"
                                     >
                                         View PDF
@@ -40,7 +39,6 @@ export const Pdf = ({ pdfs }) => {
                                         width="300"
                                         height="200"
                                         title={`PDF Preview: ${pdf.name}`}
-                                        frameBorder="0"
                                         allow="autoplay"
                                     />
                                 </div>
@@ -52,3 +50,5 @@ export const Pdf = ({ pdfs }) => {
         </div>
     );
 };
+
+export default Pdf;

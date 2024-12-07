@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Hero.css'; // Add custom styles here
-import { Pdf } from './Pdf';
+import Pdf from './Pdf';
 import axios from 'axios'; // Import axios for API requests
 
 export const Hero = () => {
@@ -34,19 +34,24 @@ export const Hero = () => {
     console.log(`Filtering PDFs for ${stream} - Year ${year} - Semester ${semester} - Subject ${subject}`);
 
     try {
-      // Fetch filtered PDFs from the backend
       const response = await axios.get('http://localhost:5000/yourRoute', {
-        params: { stream, year, semester, subject }, // Send the filter parameters
+        params: { stream, year, semester, subject },
       });
 
       if (response.data.success) {
-        setPdfs(response.data.files); // Set the PDF data to the state
+        setPdfs(response.data.pdfs); // Correctly map 'pdfs'
       } else {
         console.log('No files found for the selected filters');
         setPdfs([]);
       }
     } catch (error) {
-      console.error('Error fetching PDFs:', error);
+      if (error.response) {
+        console.error('Backend responded with an error:', error.response.data);
+      } else if (error.request) {
+        console.error('No response received from backend:', error.request);
+      } else {
+        console.error('Error in setting up request:', error.message);
+      }
     }
   };
 
